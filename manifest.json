@@ -1,0 +1,17 @@
+{
+  "name": "Mom & Dad's London 2026 Trip",
+  "short_name": "London Trip",
+  "description": "Trip guide for Mom & Dad — Bath, Cotswolds & London, April 2026",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F7F0",
+  "theme_color": "#7BA05B",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇬🇧</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

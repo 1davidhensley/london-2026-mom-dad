@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#7BA05B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Mom & Dad's London 2026 Trip</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F5F7F0;
+      --card: #FFFFFF;
+      --accent: #7BA05B;
+      --accent-light: #E8F0DC;
+      --accent-dark: #5E8A3C;
+      --gold: #C9A84C;
+      --gold-light: #FDF6E3;
+      --text: #2D3A1E;
+      --text-muted: #6B7A5A;
+      --white: #FFFFFF;
+      --border: #D4DFC4;
+      --family: #8B6DB0;
+      --family-light: #F0EAF6;
+      --marathon: #D4574E;
+      --marathon-light: #FDECEA;
+      --birthday: #E85D9A;
+      --birthday-light: #FFF0F6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, .day-label { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      padding: 28px 20px 22px;
+      color: var(--white);
+      text-align: center;
+    }
+    .app-header .subtitle { font-size: 14px; font-weight: 500; opacity: 0.9; letter-spacing: 1.5px; text-transform: uppercase; }
+    .app-header h1 { font-size: 30px; font-weight: 800; margin: 4px 0; }
+    .app-header .dates { font-size: 15px; opacity: 0.85; }
+
+    /* Nav Tabs */
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 16px 4px;
+      flex-wrap: wrap;
+    }
+    .nav-tab {
+      padding: 10px 22px;
+      border-radius: 24px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      background: var(--white);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-tab.active {
+      background: var(--accent);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(123,160,91,0.3);
+    }
+
+    /* Date Scroller */
+    .date-scroller {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 14px 16px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .date-scroller::-webkit-scrollbar { display: none; }
+
+    .date-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 16px;
+      min-width: 80px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .date-card.selected { border: 3px solid var(--accent); background: var(--accent-light); }
+    .date-card.selected.birthday { border-color: var(--birthday); background: var(--birthday-light); }
+    .date-card.selected.marathon { border-color: var(--marathon); background: var(--marathon-light); }
+    .date-card .dow { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .date-card .num { font-size: 22px; font-weight: 700; color: var(--text); margin: 2px 0; }
+    .date-card.birthday .num { color: var(--birthday); }
+    .date-card.marathon .num { color: var(--marathon); }
+    .date-card .mon { font-size: 11px; color: var(--text-muted); }
+    .date-card .badge { font-size: 16px; margin-top: 4px; }
+
+    /* Day Header */
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px 0;
+    }
+    .arrow-btn {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--white);
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .arrow-btn:disabled { opacity: 0.3; cursor: default; }
+    .day-header-center { text-align: center; flex: 1; }
+    .day-label { font-size: 26px; font-weight: 800; color: var(--text); }
+    .day-label.birthday { color: var(--birthday); }
+    .day-label.marathon { color: var(--marathon); }
+    .day-subtext { font-size: 16px; color: var(--text-muted); }
+
+    /* Hotel Banner */
+    .hotel-banner {
+      margin: 12px 20px 4px;
+      background: var(--gold-light);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hotel-banner .icon { font-size: 24px; }
+    .hotel-banner .label { font-size: 13px; font-weight: 600; color: var(--gold); }
+    .hotel-banner .name { font-size: 17px; font-weight: 600; color: var(--text); }
+    .hotel-banner .flex1 { flex: 1; }
+
+    /* Birthday Banner */
+    .birthday-banner {
+      position: relative;
+      background: linear-gradient(135deg, #E85D9A, #F5A0C0, #E85D9A);
+      border-radius: 18px;
+      padding: 22px 20px;
+      margin-bottom: 16px;
+      color: var(--white);
+      text-align: center;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(232, 93, 154, 0.3);
+    }
+    .birthday-banner .emojis { font-size: 40px; margin-bottom: 4px; }
+    .birthday-banner h2 { font-size: 26px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+    .birthday-banner .sub { font-size: 16px; font-weight: 500; opacity: 0.95; margin-top: 4px; }
+
+    /* Confetti */
+    .confetti-container {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .confetti-piece {
+      position: absolute;
+      top: -10px;
+      border-radius: 2px;
+      animation: confettiFall linear infinite;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(250px) rotate(720deg); opacity: 0; }
+    }
+    .birthday-banner .content { position: relative; z-index: 2; }
+
+    /* Family Banner */
+    .family-banner {
+      background: var(--family-light);
+      border: 2px solid var(--family);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+    .family-banner.birthday-family {
+      background: var(--birthday-light);
+      border-color: var(--birthday);
+    }
+    .family-banner .title { font-size: 16px; font-weight: 700; color: var(--family); margin-bottom: 6px; }
+    .family-banner.birthday-family .title { color: var(--birthday); }
+    .family-banner .item { font-size: 16px; color: var(--text); margin-bottom: 2px; padding-left: 8px; }
+
+    /* Event Row */
+    .event-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      background: var(--white);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .event-row.food { border-left-color: var(--gold); }
+    .event-row.marathon { border-left-color: var(--marathon); background: var(--marathon-light); }
+    .event-row.travel { border-left-color: var(--text-muted); }
+    .event-row.birthday-event { border-left-color: var(--birthday); }
+    .event-row .icon { font-size: 28px; line-height: 1; }
+    .event-row .time-label { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
+    .event-row .activity { font-size: 18px; font-weight: 500; color: var(--text); line-height: 1.4; }
+    .event-row .flex1 { flex: 1; }
+
+    /* Map Link */
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      margin-top: 6px;
+      padding: 4px 10px;
+      background: var(--accent-light);
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .map-link:hover { background: #d6e8c4; }
+
+    /* Overview Cards */
+    .overview-phases {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .phase-card {
+      background: var(--white);
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 100px;
+    }
+    .phase-card .emoji { font-size: 28px; }
+    .phase-card .label { font-size: 18px; font-weight: 700; }
+    .phase-card .dates { font-size: 13px; color: var(--text-muted); }
+
+    .overview-day-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      transition: transform 0.1s;
+    }
+    .overview-day-btn:active { transform: scale(0.98); }
+    .overview-day-btn.birthday { background: var(--birthday-light); border: 2px solid var(--birthday); }
+    .overview-day-btn.marathon { background: var(--marathon-light); border: 2px solid var(--marathon); }
+    .overview-day-btn .num-box {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      background: var(--accent-light);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .overview-day-btn.birthday .num-box { background: var(--birthday); }
+    .overview-day-btn.marathon .num-box { background: var(--marathon); }
+    .overview-day-btn .num-box .num {
+      font-size: 20px; font-weight: 800; line-height: 1;
+      color: var(--accent);
+    }
+    .overview-day-btn.birthday .num-box .num,
+    .overview-day-btn.marathon .num-box .num { color: var(--white); }
+    .overview-day-btn .num-box .dow {
+      font-size: 11px; color: var(--text-muted);
+    }
+    .overview-day-btn.birthday .num-box .dow,
+    .overview-day-btn.marathon .num-box .dow { color: rgba(255,255,255,0.8); }
+    .overview-day-btn .info .label {
+      font-size: 18px; font-weight: 700; color: var(--text);
+    }
+    .overview-day-btn.birthday .info .label { color: var(--birthday); }
+    .overview-day-btn.marathon .info .label { color: var(--marathon); }
+    .overview-day-btn .info .detail { font-size: 14px; color: var(--text-muted); }
+    .overview-day-btn .arrow { font-size: 20px; color: var(--text-muted); }
+
+    /* Legend */
+    .legend {
+      margin-top: 20px;
+      padding: 16px 18px;
+      background: var(--white);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .legend .title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .legend .items { display: flex; flex-wrap: wrap; gap: 14px; }
+    .legend .item { display: flex; align-items: center; gap: 6px; font-size: 15px; }
+    .legend .item .icon { font-size: 20px; }
+    .legend .item .text { color: var(--text-muted); }
+
+    /* Resources */
+    .resource-group { margin-bottom: 20px; }
+    .resource-group-header {
+      font-size: 19px; font-weight: 700; color: var(--text);
+      padding: 8px 0 10px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .resource-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; background: var(--white);
+      border-radius: 12px; margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .resource-item .icon { font-size: 26px; line-height: 1; }
+    .resource-item .name { font-size: 17px; font-weight: 600; color: var(--text); }
+    .resource-item .name a { color: var(--accent); text-decoration: none; }
+    .resource-item .detail { font-size: 15px; color: var(--text-muted); margin-top: 2px; }
+    .resource-item .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .phone-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 16px; font-weight: 700; color: var(--marathon);
+      text-decoration: none; padding: 4px 12px;
+      background: var(--marathon-light); border-radius: 8px;
+    }
+
+    /* Sections */
+    .section { padding: 12px 20px 24px; }
+    .section-padded { padding: 16px 20px 32px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Weather Card */
+    .weather-card {
+      background: #E8F4FD;
+      border: 2px solid #B3D9F2;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 8px 20px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .weather-card .icon { font-size: 28px; flex-shrink: 0; }
+    .weather-card .info { flex: 1; }
+    .weather-card .temp { font-size: 15px; font-weight: 600; color: #1a5490; }
+    .weather-card .desc { font-size: 13px; color: #2d6fa3; margin-top: 2px; }
+    .weather-card .rain { font-size: 12px; color: #4a8bc2; font-weight: 500; margin-top: 2px; }
+
+    /* Overview Weather */
+    .overview-weather {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Packing List */
+    .packing-progress {
+      background: var(--accent-light);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .progress-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent-dark);
+      margin-bottom: 10px;
+    }
+    .progress-bar {
+      background: var(--border);
+      border-radius: 8px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: var(--accent);
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.3s ease;
+    }
+
+    .packing-category {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .category-header {
+      background: var(--accent-light);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .category-header .label {
+      font-weight: 600;
+      color: var(--accent-dark);
+      font-size: 15px;
+    }
+    .category-header .toggle {
+      font-size: 18px;
+      transition: transform 0.3s ease;
+    }
+    .category-header.collapsed .toggle {
+      transform: rotate(-90deg);
+    }
+
+    .category-items {
+      padding: 0;
+      max-height: 1000px;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .category-items.collapsed {
+      max-height: 0;
+    }
+
+    .packing-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      gap: 12px;
+    }
+    .packing-item:first-child {
+      border-top: none;
+    }
+    .packing-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .packing-item label {
+      flex: 1;
+      font-size: 16px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+    .packing-item input[type="checkbox"]:checked + label {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .reset-btn:active {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    /* Packing Edit Mode */
+    .packing-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .edit-btn, .done-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .edit-btn {
+      background: var(--accent);
+      color: var(--white);
+    }
+    .edit-btn:active {
+      opacity: 0.85;
+    }
+    .done-btn {
+      background: var(--accent);
+      color: var(--white);
+    }
+    .done-btn:active {
+      opacity: 0.85;
+    }
+
+    .packing-edit-mode {
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      transition: background 0.2s;
+    }
+
+    .packing-delete-btn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s;
+      opacity: 0;
+      flex-shrink: 0;
+    }
+    .packing-edit-mode .packing-delete-btn {
+      opacity: 1;
+    }
+    .packing-delete-btn:active {
+      background: #cc0000;
+    }
+
+    .packing-item-text {
+      flex: 1;
+      font-size: 16px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .packing-item-editing input {
+      font-size: 16px;
+      padding: 8px 12px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .packing-add-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      margin-top: 8px;
+      min-height: 44px;
+      transition: all 0.2s;
+    }
+    .packing-add-input::placeholder {
+      color: var(--text-muted);
+    }
+    .packing-add-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--card);
+    }
+
+    .packing-add-btn {
+      background: #00aa00;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .packing-add-btn:active {
+      background: #008800;
+    }
+
+    .packing-category-add-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      min-height: 44px;
+      margin-bottom: 12px;
+    }
+    .packing-category-add-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .add-category-btn {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+      margin-top: 8px;
+    }
+    .add-category-btn:active {
+      opacity: 0.85;
+    }
+
+    .reset-options-container {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+    .reset-options-btn {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+    .reset-options-btn:active {
+      background: #ff4444;
+      color: white;
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1f14;
+        --card: #242b1c;
+        --white: #242b1c;
+        --text: #e8eee0;
+        --text-muted: #9aaa86;
+        --border: #3a4530;
+        --accent-light: #2d3a22;
+        --gold-light: #2e2918;
+        --family-light: #2a2233;
+        --marathon-light: #2e1a18;
+        --birthday-light: #2e1a24;
+      }
+      .weather-card {
+        background: #1e3a52;
+        border-color: #2d5a7a;
+      }
+      .weather-card .temp { color: #7ec8ff; }
+      .weather-card .desc { color: #5db3e8; }
+      .weather-card .rain { color: #4a9fd1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="subtitle">London 2026</div>
+    <h1>Mom &amp; Dad's Trip</h1>
+    <div class="dates">April 18 – April 30 · Bath → Cotswolds → London</div>
+  </header>
+
+  <!-- Nav Tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="day">📅 Day View</button>
+    <button class="nav-tab" data-view="overview">🗺️ Full Trip</button>
+    <button class="nav-tab" data-view="resources">🚨 Resources</button>
+    <button class="nav-tab" data-view="packing">🧳 Packing</button>
+  </div>
+
+  <!-- DAY VIEW -->
+  <div class="view active" id="dayView">
+    <div class="date-scroller" id="dateScroller"></div>
+    <div class="day-header">
+      <button class="arrow-btn" id="prevBtn">←</button>
+      <div class="day-header-center">
+        <div class="day-label" id="dayLabel"></div>
+        <div class="day-subtext" id="daySubtext"></div>
+      </div>
+      <button class="arrow-btn" id="nextBtn">→</button>
+    </div>
+    <div class="hotel-banner" id="hotelBanner">
+      <span class="icon">🏨</span>
+      <div class="flex1">
+        <div class="label">STAYING AT</div>
+        <div class="name" id="hotelName"></div>
+      </div>
+      <a class="map-link" id="hotelMapLink" target="_blank" rel="noopener noreferrer">🗺️ Map</a>
+    </div>
+    <div class="section" id="dayEvents"></div>
+  </div>
+
+  <!-- OVERVIEW VIEW -->
+  <div class="view" id="overviewView">
+    <div class="section-padded">
+      <div class="overview-phases">
+        <div class="phase-card" style="border-color: #6B8E4E;">
+          <div class="emoji">🏛️</div>
+          <div class="label" style="color: #6B8E4E;">Bath</div>
+          <div class="dates">Apr 18–20</div>
+        </div>
+        <div class="phase-card" style="border-color: #8BA06B;">
+          <div class="emoji">🌿</div>
+          <div class="label" style="color: #8BA06B;">Cotswolds</div>
+          <div class="dates">Apr 21–23</div>
+        </div>
+        <div class="phase-card" style="border-color: #C9A84C;">
+          <div class="emoji">🇬🇧</div>
+          <div class="label" style="color: #C9A84C;">London</div>
+          <div class="dates">Apr 24–30</div>
+        </div>
+      </div>
+      <div id="overviewList"></div>
+      <div class="legend">
+        <div class="title">Quick Guide</div>
+        <div class="items">
+          <div class="item"><span class="icon">🎂</span><span class="text">Birthday!</span></div>
+          <div class="item"><span class="icon">👨‍👩‍👦‍👦</span><span class="text">Family event</span></div>
+          <div class="item"><span class="icon">🏅</span><span class="text">Marathon day</span></div>
+          <div class="item"><span class="icon">🗺️</span><span class="text">Tap for Maps</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESOURCES VIEW -->
+  <div class="view" id="resourcesView">
+    <div class="section-padded" id="resourcesList"></div>
+  </div>
+
+  <!-- PACKING VIEW -->
+  <div class="view" id="packingView">
+    <div class="section-padded">
+      <div class="packing-progress">
+        <div class="progress-text"><span id="packingCount">0</span> of <span id="packingTotal">0</span> packed</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="packingFill"></div>
+        </div>
+      </div>
+      <div id="packingList"></div>
+      <button class="reset-btn" id="resetPackingBtn">🔄 Reset All</button>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    Mom &amp; Dad's London 2026 Trip Guide<br>
+    <span style="font-size:12px;">Last updated: March 29, 2026</span>
+  </footer>
+
+<script>
+// ==================== DATA ====================
+const ICONS = { Breakfast: "☕", Morning: "🌅", Lunch: "🍽️", Afternoon: "🏛️", Dinner: "🍷", Evening: "🌙" };
+
+function mapsUrl(q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); }
+
+const WEATHER_DATA = {
+  bath: { temp: "13°C / 55°F", icon: "⛅", desc: "Partly cloudy", rain: "40% rain", location: "Bath" },
+  cotswolds: { temp: "12°C / 54°F", icon: "⛅", desc: "Partly cloudy", rain: "45% rain", location: "Cotswolds" },
+  london: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" }
+};
+
+function getWeatherForHotel(hotelName) {
+  if (hotelName.includes('Bath')) return WEATHER_DATA.bath;
+  if (hotelName.includes('Porch House') || hotelName.includes('Stow')) return WEATHER_DATA.cotswolds;
+  if (hotelName.includes('Hub Premier Inn') || hotelName.includes('Soho')) return WEATHER_DATA.london;
+  return WEATHER_DATA.london; // default
+}
+
+const itinerary = [
+  {
+    date: "April 18", day: "Saturday", label: "Arrival Day",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Arlington Hotel, Bath", query: "Arlington Hotel Bath UK" },
+    weather: { temp: "13°C / 55°F", icon: "⛅", desc: "Partly cloudy", rain: "40% rain", location: "Bath" },
+    events: [
+      { time: "Morning", activity: "Arrive at 10:00am, pick up rental car, drive to Bath", type: "travel", place: null },
+      { time: "Afternoon", activity: "Check in at Arlington Hotel", type: "hotel", place: { name: "Arlington Hotel", query: "Arlington Hotel Bath UK" } },
+      { time: "Evening", activity: "Relax & settle in", type: "leisure", place: null }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 19", day: "Sunday", label: "Exploring Bath",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Arlington Hotel, Bath", query: "Arlington Hotel Bath UK" },
+    weather: { temp: "13°C / 55°F", icon: "⛅", desc: "Partly cloudy", rain: "40% rain", location: "Bath" },
+    events: [
+      { time: "Morning", activity: "Sightseeing in Bath", type: "sightseeing", place: { name: "Roman Baths", query: "Roman Baths Bath UK" } },
+      { time: "Afternoon", activity: "Sunday Roast at The Chequers, Bath", type: "food", place: { name: "The Chequers", query: "The Chequers pub Bath UK" } },
+      { time: "Evening", activity: "Free time to explore", type: "leisure", place: null }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 20", day: "Monday", label: "Stonehenge & Caves",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Arlington Hotel, Bath", query: "Arlington Hotel Bath UK" },
+    weather: { temp: "13°C / 55°F", icon: "⛅", desc: "Partly cloudy", rain: "40% rain", location: "Bath" },
+    events: [
+      { time: "Morning", activity: "Stonehenge visit", type: "sightseeing", place: { name: "Stonehenge", query: "Stonehenge Wiltshire UK" } },
+      { time: "Afternoon", activity: "Cheddar Gorge & Caves", type: "sightseeing", place: { name: "Cheddar Caves", query: "Cheddar Gorge and Caves UK" } }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 21", day: "Tuesday", label: "To the Cotswolds",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "The Porch House, Stow-on-the-Wold", query: "The Porch House Stow-on-the-Wold UK" },
+    weather: { temp: "12°C / 54°F", icon: "⛅", desc: "Partly cloudy", rain: "45% rain", location: "Cotswolds" },
+    events: [
+      { time: "Morning", activity: "Check out, travel to Stow-on-the-Wold", type: "travel", place: { name: "Stow-on-the-Wold", query: "Stow-on-the-Wold Cotswolds UK" } },
+      { time: "Afternoon", activity: "Explore Stow-on-the-Wold & The Porch House", type: "sightseeing", place: { name: "The Porch House", query: "The Porch House Stow-on-the-Wold UK" } }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 22", day: "Wednesday", label: "Cotswolds Day",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "The Porch House, Stow-on-the-Wold", query: "The Porch House Stow-on-the-Wold UK" },
+    weather: { temp: "12°C / 54°F", icon: "⛅", desc: "Partly cloudy", rain: "45% rain", location: "Cotswolds" },
+    events: [
+      { time: "Morning", activity: "Sightseeing in the Cotswolds", type: "sightseeing", place: { name: "Bourton-on-the-Water", query: "Bourton-on-the-Water Cotswolds UK" } },
+      { time: "Afternoon", activity: "Explore villages & countryside", type: "sightseeing", place: null }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 23", day: "Thursday", label: "Blenheim Palace",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "The Porch House, Stow-on-the-Wold", query: "The Porch House Stow-on-the-Wold UK" },
+    weather: { temp: "12°C / 54°F", icon: "⛅", desc: "Partly cloudy", rain: "45% rain", location: "Cotswolds" },
+    events: [
+      { time: "Morning", activity: "Visit Blenheim Palace", type: "sightseeing", place: { name: "Blenheim Palace", query: "Blenheim Palace Woodstock Oxfordshire UK" } },
+      { time: "Afternoon", activity: "Explore the palace grounds & gardens", type: "sightseeing", place: { name: "Blenheim Palace Gardens", query: "Blenheim Palace Gardens UK" } }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 24", day: "Friday", label: "Travel to London",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Morning", activity: "Drive to London, drop car at airport", type: "travel", place: { name: "Heathrow Airport", query: "Heathrow Airport car rental return" } },
+      { time: "Afternoon", activity: "Train to central London", type: "travel", place: null },
+      { time: "Evening", activity: "Arrive in London! Settle into hotel", type: "hotel", place: { name: "Hub Premier Inn Soho", query: "hub by Premier Inn London Soho" } }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 25", day: "Saturday", label: "🎂 Mom's Birthday!",
+    isMarathon: false, isBirthday: true,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Afternoon", activity: "3:45pm — John Snow Walking Tour (1.5 miles, 7 stops)", type: "sightseeing", place: { name: "Broadwick St (John Snow pump)", query: "John Snow memorial pump Broadwick Street London" } },
+      { time: "Dinner", activity: "5:30pm — Birthday Dinner at John Snow Pub", type: "food", place: { name: "John Snow Pub", query: "John Snow pub Broadwick Street Soho London" } },
+      { time: "Evening", activity: "6:45pm — Birthday Pizza at Rudy's!", type: "food", place: { name: "Rudy's Pizza Soho", query: "Rudy's Neapolitan Pizza Soho London" } }
+    ],
+    familyEvents: [
+      "🎂 Birthday celebration with the whole family!",
+      "Walking tour with David, Paula, James & Stef",
+      "Birthday dinner together at John Snow Pub & Rudy's Pizza"
+    ]
+  },
+  {
+    date: "April 26", day: "Sunday", label: "🏅 Marathon Day!",
+    isMarathon: true, isBirthday: false,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Morning", activity: "London Marathon — cheer on David!", type: "marathon", place: { name: "London Marathon Route", query: "London Marathon spectator route" } },
+      { time: "Afternoon", activity: "Marathon continues", type: "marathon", place: null },
+      { time: "Dinner", activity: "4:45pm — Cakes & Bubbles (celebration!)", type: "food", place: { name: "Cakes & Bubbles", query: "Cakes and Bubbles Hotel Cafe Royal London" } },
+      { time: "Evening", activity: "6:15pm — Green Bar at Hotel Café Royal", type: "food", place: { name: "Green Bar", query: "Green Bar Hotel Cafe Royal Regent Street London" } }
+    ],
+    familyEvents: [
+      "Marathon spectating with everyone!",
+      "Celebration dinner — all together at Cakes & Bubbles & Green Bar"
+    ]
+  },
+  {
+    date: "April 27", day: "Monday", label: "Kensington & Cocktails",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Lunch", activity: "Dishoom", type: "food", place: { name: "Dishoom", query: "Dishoom Soho London" } },
+      { time: "Afternoon", activity: "Explore Kensington", type: "sightseeing", place: { name: "Kensington", query: "Kensington High Street London" } },
+      { time: "Dinner", activity: "4:00pm — Connaught Bar / 7:00pm — Mother Mash", type: "food", place: { name: "The Connaught Bar", query: "The Connaught Bar Mayfair London" } },
+      { time: "Evening", activity: "9:30pm — Ceremony of the Keys (Tower of London)", type: "sightseeing", place: { name: "Tower of London", query: "Tower of London Ceremony of the Keys" } }
+    ],
+    familyEvents: [
+      "Connaught Bar & Mother Mash with David & Paula",
+      "Ceremony of the Keys together"
+    ]
+  },
+  {
+    date: "April 28", day: "Tuesday", label: "Tea & Theatre",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Lunch", activity: "12:00pm — Fortnum & Mason Afternoon Tea", type: "food", place: { name: "Fortnum & Mason", query: "Fortnum and Mason Piccadilly London afternoon tea" } },
+      { time: "Dinner", activity: "5:00pm — Mr. Fogg's Gin House", type: "food", place: { name: "Mr. Fogg's Gin House", query: "Mr Fogg's Gin House Covent Garden London" } },
+      { time: "Evening", activity: "7:30pm — Book of Mormon (West End!)", type: "sightseeing", place: { name: "Book of Mormon", query: "Book of Mormon Gielgud Theatre London" } }
+    ],
+    familyEvents: [
+      "Afternoon Tea at Fortnum & Mason with James & Stef"
+    ]
+  },
+  {
+    date: "April 29", day: "Wednesday", label: "Tower of London",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Morning", activity: "9:00am — Tower of London", type: "sightseeing", place: { name: "Tower of London", query: "Tower of London UK" } },
+      { time: "Dinner", activity: "6:00pm — Warehaus", type: "food", place: { name: "Warehaus", query: "Warehaus restaurant London" } },
+      { time: "Evening", activity: "9:30pm — Ceremony of the Keys", type: "sightseeing", place: { name: "Tower of London", query: "Tower of London Ceremony of the Keys" } }
+    ],
+    familyEvents: []
+  },
+  {
+    date: "April 30", day: "Thursday", label: "Buckingham Palace",
+    isMarathon: false, isBirthday: false,
+    hotel: { name: "Hub Premier Inn, Soho", query: "hub by Premier Inn London Soho" },
+    weather: { temp: "15°C / 59°F", icon: "⛅", desc: "Partly cloudy", rain: "35% rain", location: "London" },
+    events: [
+      { time: "Afternoon", activity: "12:30pm — Buckingham Palace Tour", type: "sightseeing", place: { name: "Buckingham Palace", query: "Buckingham Palace London tour" } }
+    ],
+    familyEvents: []
+  }
+];
+
+const defaultPackingList = [
+  {
+    category: "✈️ Travel Essentials",
+    items: [
+      "Passports",
+      "Travel insurance docs",
+      "Boarding passes",
+      "Phone chargers & power bank",
+      "UK power adapter (Type G 3-prong)",
+      "Cash (some GBP)",
+      "Credit/debit cards (notify bank)"
+    ]
+  },
+  {
+    category: "👗 Clothing (April - Cool & Changeable)",
+    items: [
+      "Waterproof jacket or rain coat",
+      "Warm layers (fleece or cardigan)",
+      "Comfortable walking shoes (broken in!)",
+      "Smart casual outfit (for afternoon tea & nice dinners)",
+      "Light scarf",
+      "Sunglasses",
+      "Pajamas",
+      "Underwear & socks (10+ days worth)"
+    ]
+  },
+  {
+    category: "🧴 Toiletries & Health",
+    items: [
+      "Prescription medications",
+      "Pain relievers (ibuprofen/paracetamol)",
+      "Plasters/band-aids (for walking blisters)",
+      "Sunscreen",
+      "Toothbrush & toiletries",
+      "Hand sanitizer"
+    ]
+  },
+  {
+    category: "🚗 Road Trip Items",
+    items: [
+      "Driving license (international if needed)",
+      "Car rental confirmation",
+      "Paper road map or offline maps downloaded",
+      "Snacks for the drive",
+      "Reusable water bottles",
+      "Small daypack/backpack for excursions"
+    ]
+  },
+  {
+    category: "📱 Tech & Comfort",
+    items: [
+      "Phone + charger",
+      "Camera",
+      "Umbrella (compact)",
+      "Small crossbody bag or money belt",
+      "Travel pillow for car rides",
+      "Book or entertainment for evenings"
+    ]
+  }
+];
+
+let packingList = [
+  {
+    category: "✈️ Travel Essentials",
+    items: [
+      "Passports",
+      "Travel insurance docs",
+      "Boarding passes",
+      "Phone chargers & power bank",
+      "UK power adapter (Type G 3-prong)",
+      "Cash (some GBP)",
+      "Credit/debit cards (notify bank)"
+    ]
+  },
+  {
+    category: "👗 Clothing (April - Cool & Changeable)",
+    items: [
+      "Waterproof jacket or rain coat",
+      "Warm layers (fleece or cardigan)",
+      "Comfortable walking shoes (broken in!)",
+      "Smart casual outfit (for afternoon tea & nice dinners)",
+      "Light scarf",
+      "Sunglasses",
+      "Pajamas",
+      "Underwear & socks (10+ days worth)"
+    ]
+  },
+  {
+    category: "🧴 Toiletries & Health",
+    items: [
+      "Prescription medications",
+      "Pain relievers (ibuprofen/paracetamol)",
+      "Plasters/band-aids (for walking blisters)",
+      "Sunscreen",
+      "Toothbrush & toiletries",
+      "Hand sanitizer"
+    ]
+  },
+  {
+    category: "🚗 Road Trip Items",
+    items: [
+      "Driving license (international if needed)",
+      "Car rental confirmation",
+      "Paper road map or offline maps downloaded",
+      "Snacks for the drive",
+      "Reusable water bottles",
+      "Small daypack/backpack for excursions"
+    ]
+  },
+  {
+    category: "📱 Tech & Comfort",
+    items: [
+      "Phone + charger",
+      "Camera",
+      "Umbrella (compact)",
+      "Small crossbody bag or money belt",
+      "Travel pillow for car rides",
+      "Book or entertainment for evenings"
+    ]
+  }
+];
+
+const resources = [
+  {
+    group: "🚨 Emergency & Medical",
+    items: [
+      { icon: "🆘", name: "UK Emergency Services", detail: "Police, Fire, Ambulance", phone: "999" },
+      { icon: "🏥", name: "NHS Non-Emergency", detail: "Medical advice, minor injuries, pharmacy info", phone: "111" },
+      { icon: "🏛", name: "U.S. Embassy London", detail: "33 Nine Elms Lane, SW11 7US", phone: "+44 20 7499 9000", url: "https://uk.usembassy.gov", mapQuery: "US Embassy London Nine Elms" },
+      { icon: "💊", name: "Boots Pharmacy Finder", detail: "UK's largest pharmacy chain — many open late", url: "https://www.boots.com/store-finder" },
+      { icon: "🩺", name: "NHS Walk-In Centres", detail: "No appointment needed — minor injuries & illness", url: "https://www.nhs.uk/service-search/find-a-walk-in-centre" }
+    ]
+  },
+  {
+    group: "🚕 Getting Around",
+    items: [
+      { icon: "📱", name: "Uber UK", detail: "Ride-hailing — widely available across London", url: "https://www.uber.com/gb/en/" },
+      { icon: "⚡", name: "Bolt", detail: "Budget-friendly alternative to Uber", url: "https://bolt.eu/en-gb/" },
+      { icon: "🚖", name: "FREE NOW (Black Cabs)", detail: "Book London's iconic black cabs via app", url: "https://www.free-now.com/uk/" },
+      { icon: "🚇", name: "Transport for London (TfL)", detail: "Tube map, bus routes — use contactless to pay", url: "https://tfl.gov.uk" },
+      { icon: "🗺", name: "Citymapper London", detail: "Best transit app for London — real-time routes", url: "https://citymapper.com/london" }
+    ]
+  },
+  {
+    group: "👨‍👩‍👦‍👦 Family Contacts",
+    items: [
+      { icon: "👫", name: "David & Paula", detail: "1davidhensley@gmail.com · bridsp@gmail.com" },
+      { icon: "👫", name: "James & Stef", detail: "hensley.james@gmail.com" },
+      { icon: "🏨", name: "Hub Premier Inn, Soho", detail: "Shared hotel Apr 25–30 — everyone in London together", mapQuery: "hub by Premier Inn London Soho" }
+    ]
+  },
+  {
+    group: "ℹ️ Useful Info",
+    items: [
+      { icon: "📱", name: "UK Country Code", detail: "+44 (drop the leading 0 from local numbers)" },
+      { icon: "💳", name: "Contactless Payment", detail: "Apple Pay / Google Pay / contactless accepted almost everywhere" },
+      { icon: "🔌", name: "Power Outlets", detail: "UK uses Type G plugs (3-prong) — bring a US-to-UK adapter" },
+      { icon: "💱", name: "Currency", detail: "British Pound Sterling (£) — ATMs widely available" },
+      { icon: "🕐", name: "Time Zone", detail: "BST (UTC+1) — 5 hours ahead of Eastern Time" }
+    ]
+  },
+  {
+    group: "🏅 London Marathon",
+    items: [
+      { icon: "🏃", name: "TCS London Marathon", detail: "Official site — route map, spectator guide, results", url: "https://www.tcslondonmarathon.com" },
+      { icon: "📍", name: "Spectator Guide", detail: "Best viewing spots & how to track David", url: "https://www.tcslondonmarathon.com/the-event/spectator-guide" }
+    ]
+  }
+];
+
+// ==================== RENDERING ====================
+let selectedIdx = 0;
+let packingEditMode = false;
+let editingItemId = null;
+
+function mapLinkHTML(query, text) {
+  if (!query) return '';
+  return `<a class="map-link" href="${mapsUrl(query)}" target="_blank" rel="noopener noreferrer">🗺️ ${text || 'Open in Maps'}</a>`;
+}
+
+function renderDateScroller() {
+  const el = document.getElementById('dateScroller');
+  el.innerHTML = itinerary.map((d, i) => {
+    let cls = 'date-card';
+    if (i === selectedIdx) cls += ' selected';
+    if (d.isBirthday) cls += ' birthday';
+    if (d.isMarathon) cls += ' marathon';
+    const num = d.date.split(' ')[1];
+    let badge = '';
+    if (d.isBirthday) badge = '<div class="badge">🎂</div>';
+    else if (d.isMarathon) badge = '<div class="badge">🏅</div>';
+    else if (d.familyEvents.length > 0) badge = '<div class="badge">👨‍👩‍👦‍👦</div>';
+    return `<div class="${cls}" data-idx="${i}">
+      <span class="dow">${d.day}</span>
+      <span class="num">${num}</span>
+      <span class="mon">Apr</span>
+      ${badge}
+    </div>`;
+  }).join('');
+
+  el.querySelectorAll('.date-card').forEach(card => {
+    card.addEventListener('click', () => {
+      selectedIdx = parseInt(card.dataset.idx);
+      renderDay();
+    });
+  });
+
+  // Scroll selected into view
+  const sel = el.querySelector('.selected');
+  if (sel) sel.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+function confettiHTML() {
+  const colors = ['#E85D9A','#F5A0C0','#FFD700','#FF69B4','#FF1493','#C9A84C','#7BA05B','#8B6DB0'];
+  let html = '<div class="confetti-container">';
+  for (let i = 0; i < 40; i++) {
+    const left = Math.random() * 100;
+    const delay = Math.random() * 3;
+    const dur = 2 + Math.random() * 3;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const w = 6 + Math.random() * 8;
+    html += `<div class="confetti-piece" style="left:${left}%;width:${w}px;height:${w*0.6}px;background:${color};animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderDay() {
+  const d = itinerary[selectedIdx];
+  renderDateScroller();
+
+  // Day label
+  const labelEl = document.getElementById('dayLabel');
+  labelEl.textContent = d.label;
+  labelEl.className = 'day-label' + (d.isBirthday ? ' birthday' : d.isMarathon ? ' marathon' : '');
+  document.getElementById('daySubtext').textContent = d.day + ', ' + d.date;
+
+  // Arrows
+  document.getElementById('prevBtn').disabled = selectedIdx === 0;
+  document.getElementById('nextBtn').disabled = selectedIdx === itinerary.length - 1;
+
+  // Hotel
+  document.getElementById('hotelName').textContent = d.hotel.name;
+  document.getElementById('hotelMapLink').href = mapsUrl(d.hotel.query);
+
+  // Events
+  let html = '';
+
+  // Weather card
+  const w = d.weather;
+  html += `<div class="weather-card">
+    <div class="icon">${w.icon}</div>
+    <div class="info">
+      <div class="temp">${w.temp}</div>
+      <div class="desc">${w.desc}</div>
+      <div class="rain">${w.rain}</div>
+    </div>
+  </div>`;
+
+  // Birthday banner
+  if (d.isBirthday) {
+    html += `<div class="birthday-banner">
+      ${confettiHTML()}
+      <div class="content">
+        <div class="emojis">🎂 🎉 🎈</div>
+        <h2>Happy Birthday, Mom!</h2>
+        <div class="sub">Celebrating in London with the whole family</div>
+      </div>
+    </div>`;
+  }
+
+  // Family banner
+  if (d.familyEvents.length > 0) {
+    const cls = d.isBirthday ? 'family-banner birthday-family' : 'family-banner';
+    const title = d.isBirthday ? '🎂 Birthday Family Time!' : '👨‍👩‍👦‍👦 Family Time!';
+    html += `<div class="${cls}">
+      <div class="title">${title}</div>
+      ${d.familyEvents.map(e => `<div class="item">• ${e}</div>`).join('')}
+    </div>`;
+  }
+
+  // Event rows
+  d.events.forEach(ev => {
+    const icon = ICONS[ev.time] || '📌';
+    let cls = 'event-row';
+    if (ev.type === 'food') cls += ' food';
+    if (ev.type === 'marathon') cls += ' marathon';
+    if (ev.type === 'travel') cls += ' travel';
+    if (d.isBirthday) cls += ' birthday-event';
+
+    html += `<div class="${cls}">
+      <span class="icon">${icon}</span>
+      <div class="flex1">
+        <div class="time-label">${ev.time}</div>
+        <div class="activity">${ev.activity}</div>
+        ${ev.place ? mapLinkHTML(ev.place.query, ev.place.name) : ''}
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('dayEvents').innerHTML = html;
+}
+
+function renderOverview() {
+  const el = document.getElementById('overviewList');
+  el.innerHTML = itinerary.map((d, i) => {
+    let cls = 'overview-day-btn';
+    if (d.isBirthday) cls += ' birthday';
+    if (d.isMarathon) cls += ' marathon';
+    const num = d.date.split(' ')[1];
+    let badge = '';
+    if (d.isBirthday) badge = '🎂';
+    else if (d.familyEvents.length > 0) badge = '👨‍👩‍👦‍👦';
+
+    return `<button class="${cls}" data-idx="${i}">
+      <div class="num-box">
+        <span class="num">${num}</span>
+        <span class="dow">${d.day.slice(0,3)}</span>
+      </div>
+      <div class="info" style="flex:1">
+        <div class="label">${d.label}</div>
+        <div class="detail">${d.events.length} activities · ${d.hotel.name.split(',')[0]}</div>
+        <div class="overview-weather">${d.weather.icon} ${d.weather.temp} · ${d.weather.rain}</div>
+      </div>
+      ${badge ? `<span style="font-size:22px">${badge}</span>` : ''}
+      <span class="arrow">→</span>
+    </button>`;
+  }).join('');
+
+  el.querySelectorAll('.overview-day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedIdx = parseInt(btn.dataset.idx);
+      switchView('day');
+    });
+  });
+}
+
+function renderResources() {
+  const el = document.getElementById('resourcesList');
+  el.innerHTML = resources.map(g => {
+    return `<div class="resource-group">
+      <div class="resource-group-header">${g.group}</div>
+      ${g.items.map(item => {
+        const nameHTML = item.url
+          ? `<div class="name"><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.name}</a></div>`
+          : `<div class="name">${item.name}</div>`;
+        let actions = '';
+        if (item.phone || item.mapQuery) {
+          actions = '<div class="actions">';
+          if (item.phone) actions += `<a class="phone-link" href="tel:${item.phone}">📞 ${item.phone}</a>`;
+          if (item.mapQuery) actions += mapLinkHTML(item.mapQuery, 'Directions');
+          actions += '</div>';
+        }
+        return `<div class="resource-item">
+          <span class="icon">${item.icon}</span>
+          <div style="flex:1">
+            ${nameHTML}
+            <div class="detail">${item.detail}</div>
+            ${actions}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+// Load or initialize packing list from localStorage
+function loadPackingList() {
+  const customList = localStorage.getItem('pack-mom-custom-list');
+  if (customList) {
+    try {
+      packingList = JSON.parse(customList);
+    } catch (e) {
+      packingList = JSON.parse(JSON.stringify(defaultPackingList));
+    }
+  } else {
+    packingList = JSON.parse(JSON.stringify(defaultPackingList));
+  }
+}
+
+function savePackingList() {
+  localStorage.setItem('pack-mom-custom-list', JSON.stringify(packingList));
+}
+
+function togglePackingEditMode() {
+  packingEditMode = !packingEditMode;
+  editingItemId = null;
+  renderPacking();
+}
+
+function deletePackingItem(catIdx, itemIdx) {
+  if (packingList[catIdx] && packingList[catIdx].items[itemIdx] !== undefined) {
+    packingList[catIdx].items.splice(itemIdx, 1);
+    savePackingList();
+    renderPacking();
+  }
+}
+
+function deletePackingCategory(catIdx) {
+  if (packingList[catIdx]) {
+    packingList.splice(catIdx, 1);
+    savePackingList();
+    renderPacking();
+  }
+}
+
+function addPackingItem(catIdx) {
+  const input = document.getElementById(`add-item-${catIdx}`);
+  if (input && input.value.trim()) {
+    packingList[catIdx].items.push(input.value.trim());
+    input.value = '';
+    savePackingList();
+    renderPacking();
+    input.focus();
+  }
+}
+
+function startEditingItem(catIdx, itemIdx) {
+  editingItemId = `item-${catIdx}-${itemIdx}`;
+  renderPacking();
+  setTimeout(() => {
+    const input = document.getElementById(`edit-${catIdx}-${itemIdx}`);
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }, 0);
+}
+
+function saveEditingItem(catIdx, itemIdx) {
+  const input = document.getElementById(`edit-${catIdx}-${itemIdx}`);
+  if (input && input.value.trim()) {
+    packingList[catIdx].items[itemIdx] = input.value.trim();
+    editingItemId = null;
+    savePackingList();
+    renderPacking();
+  }
+}
+
+function addNewCategory() {
+  const catName = prompt('Category name (e.g., 🧥 Winter Wear):');
+  if (catName && catName.trim()) {
+    packingList.push({
+      category: catName.trim(),
+      items: []
+    });
+    savePackingList();
+    renderPacking();
+  }
+}
+
+function renderPacking() {
+  loadPackingList();
+  const el = document.getElementById('packingList');
+  let html = '';
+  let totalItems = 0;
+  let checkedItems = 0;
+
+  // Render edit controls
+  html += `<div class="packing-controls">
+    <button class="${packingEditMode ? 'done-btn' : 'edit-btn'}" id="toggleEditBtn">
+      ${packingEditMode ? '✓ Done Editing' : '✏️ Edit List'}
+    </button>
+  </div>`;
+
+  const sectionClass = packingEditMode ? 'packing-edit-mode' : '';
+
+  packingList.forEach((cat, catIdx) => {
+    const itemsCount = cat.items.length;
+    totalItems += itemsCount;
+
+    html += `<div class="packing-category ${sectionClass}">
+      <div class="category-header" data-cat="${catIdx}">
+        <span class="label">${cat.category}</span>
+        <span class="toggle">▶</span>
+        ${packingEditMode ? `<button class="packing-delete-btn" style="margin-left: auto;" title="Delete category">✕</button>` : ''}
+      </div>
+      <div class="category-items" id="cat-${catIdx}">`;
+
+    cat.items.forEach((item, itemIdx) => {
+      const storageKey = `pack-mom-${catIdx}-${itemIdx}`;
+      const isChecked = localStorage.getItem(storageKey) === 'true';
+      if (isChecked) checkedItems++;
+      const isEditing = editingItemId === `item-${catIdx}-${itemIdx}`;
+
+      if (isEditing && packingEditMode) {
+        html += `<div class="packing-item packing-item-editing">
+          <input type="text" id="edit-${catIdx}-${itemIdx}" value="${item.replace(/"/g, '&quot;')}" style="flex:1;">
+        </div>`;
+      } else {
+        html += `<div class="packing-item">
+          <input type="checkbox" id="item-${catIdx}-${itemIdx}" ${isChecked ? 'checked' : ''}>
+          <span class="packing-item-text" data-cat="${catIdx}" data-idx="${itemIdx}">${item}</span>
+          ${packingEditMode ? `<button class="packing-delete-btn" title="Delete item">✕</button>` : ''}
+        </div>`;
+      }
+    });
+
+    // Add item input in edit mode
+    if (packingEditMode) {
+      html += `<div style="padding: 8px 16px;">
+        <div style="display: flex; gap: 8px; align-items: flex-start;">
+          <input type="text" id="add-item-${catIdx}" class="packing-add-input" placeholder="Add item..." style="flex:1;">
+          <button class="packing-add-btn" id="add-btn-${catIdx}" title="Add item">+</button>
+        </div>
+      </div>`;
+    }
+
+    html += `</div></div>`;
+  });
+
+  // Add category button in edit mode
+  if (packingEditMode) {
+    html += `<button class="add-category-btn" id="addCategoryBtn">+ Add Category</button>`;
+  }
+
+  el.innerHTML = html;
+
+  // Update progress
+  document.getElementById('packingCount').textContent = checkedItems;
+  document.getElementById('packingTotal').textContent = totalItems;
+  const percent = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
+  document.getElementById('packingFill').style.width = percent + '%';
+
+  // Toggle edit mode button
+  document.getElementById('toggleEditBtn').addEventListener('click', togglePackingEditMode);
+
+  // Checkboxes
+  packingList.forEach((cat, catIdx) => {
+    cat.items.forEach((item, itemIdx) => {
+      const checkbox = document.getElementById(`item-${catIdx}-${itemIdx}`);
+      if (checkbox) {
+        checkbox.addEventListener('change', () => {
+          const storageKey = `pack-mom-${catIdx}-${itemIdx}`;
+          localStorage.setItem(storageKey, checkbox.checked ? 'true' : 'false');
+          renderPacking();
+        });
+      }
+    });
+  });
+
+  // Category collapse/expand
+  document.querySelectorAll('.category-header').forEach(header => {
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('.packing-delete-btn')) return;
+      const catIdx = header.dataset.cat;
+      const items = document.getElementById(`cat-${catIdx}`);
+      const isCollapsed = items.classList.contains('collapsed');
+      items.classList.toggle('collapsed');
+      header.classList.toggle('collapsed');
+    });
+  });
+
+  // Delete category buttons
+  if (packingEditMode) {
+    document.querySelectorAll('.category-header .packing-delete-btn').forEach((btn, idx) => {
+      let catIdxFound = 0;
+      document.querySelectorAll('.category-header').forEach((h, i) => {
+        if (h.querySelector('.packing-delete-btn') === btn) catIdxFound = i;
+      });
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`Delete "${packingList[catIdxFound].category}" category?`)) {
+          deletePackingCategory(catIdxFound);
+        }
+      });
+    });
+  }
+
+  // Edit item text (make it editable in edit mode)
+  if (packingEditMode) {
+    document.querySelectorAll('.packing-item-text').forEach(text => {
+      text.addEventListener('click', () => {
+        const catIdx = parseInt(text.dataset.cat);
+        const itemIdx = parseInt(text.dataset.idx);
+        startEditingItem(catIdx, itemIdx);
+      });
+    });
+
+    // Delete item buttons
+    document.querySelectorAll('.packing-item .packing-delete-btn').forEach((btn) => {
+      const item = btn.closest('.packing-item');
+      const text = item.querySelector('.packing-item-text');
+      if (text) {
+        const catIdx = parseInt(text.dataset.cat);
+        const itemIdx = parseInt(text.dataset.idx);
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm(`Delete "${packingList[catIdx].items[itemIdx]}"?`)) {
+            deletePackingItem(catIdx, itemIdx);
+          }
+        });
+      }
+    });
+
+    // Add item buttons
+    packingList.forEach((cat, catIdx) => {
+      const addBtn = document.getElementById(`add-btn-${catIdx}`);
+      const input = document.getElementById(`add-item-${catIdx}`);
+      if (addBtn && input) {
+        addBtn.addEventListener('click', () => addPackingItem(catIdx));
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addPackingItem(catIdx);
+        });
+      }
+    });
+
+    // Add category button
+    const addCatBtn = document.getElementById('addCategoryBtn');
+    if (addCatBtn) {
+      addCatBtn.addEventListener('click', addNewCategory);
+    }
+  }
+
+  // Save editing when clicking away
+  if (packingEditMode) {
+    document.querySelectorAll('.packing-item-editing input').forEach(input => {
+      input.addEventListener('blur', () => {
+        const item = input.closest('.packing-item');
+        const prevText = item.previousElementSibling;
+        const catIdx = parseInt(input.id.split('-')[1]);
+        const itemIdx = parseInt(input.id.split('-')[2]);
+        saveEditingItem(catIdx, itemIdx);
+      });
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const catIdx = parseInt(input.id.split('-')[1]);
+          const itemIdx = parseInt(input.id.split('-')[2]);
+          saveEditingItem(catIdx, itemIdx);
+        }
+      });
+    });
+  }
+
+  // Reset button
+  const resetBtn = document.getElementById('resetPackingBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      const choice = prompt('1 = Reset checkboxes only\n2 = Reset to original list\n\nEnter 1 or 2:');
+      if (choice === '1') {
+        // Reset checkboxes only
+        for (let catIdx = 0; catIdx < packingList.length; catIdx++) {
+          for (let itemIdx = 0; itemIdx < packingList[catIdx].items.length; itemIdx++) {
+            localStorage.removeItem(`pack-mom-${catIdx}-${itemIdx}`);
+          }
+        }
+        renderPacking();
+      } else if (choice === '2') {
+        // Reset to original list
+        if (confirm('Delete all customizations and restore default list?')) {
+          packingList = JSON.parse(JSON.stringify(defaultPackingList));
+          savePackingList();
+          for (let catIdx = 0; catIdx < packingList.length; catIdx++) {
+            for (let itemIdx = 0; itemIdx < packingList[catIdx].items.length; itemIdx++) {
+              localStorage.removeItem(`pack-mom-${catIdx}-${itemIdx}`);
+            }
+          }
+          packingEditMode = false;
+          renderPacking();
+        }
+      }
+    });
+  }
+}
+
+// ==================== NAVIGATION ====================
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(view + 'View').classList.add('active');
+  document.querySelector(`.nav-tab[data-view="${view}"]`).classList.add('active');
+
+  if (view === 'day') renderDay();
+  else if (view === 'overview') renderOverview();
+  else if (view === 'resources') renderResources();
+  else if (view === 'packing') renderPacking();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Nav tab clicks
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchView(tab.dataset.view));
+});
+
+// Arrow buttons
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (selectedIdx > 0) { selectedIdx--; renderDay(); }
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if (selectedIdx < itinerary.length - 1) { selectedIdx++; renderDay(); }
+});
+
+// ==================== INIT ====================
+// Auto-select today if during trip
+const now = new Date();
+const tripStart = new Date(2026, 3, 18); // April 18
+const tripEnd = new Date(2026, 3, 30);   // April 30
+if (now >= tripStart && now <= tripEnd) {
+  const dayOfMonth = now.getDate();
+  const idx = itinerary.findIndex(d => parseInt(d.date.split(' ')[1]) === dayOfMonth);
+  if (idx >= 0) selectedIdx = idx;
+}
+
+// Initialize packing list from localStorage or defaults
+loadPackingList();
+
+renderDay();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
