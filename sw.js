@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mom-dad-london-v2';
+const CACHE_NAME = 'mom-dad-london-v3';
 const ASSETS = [
   './',
   './index.html',

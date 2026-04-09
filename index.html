@@ -381,6 +381,95 @@
     .weather-card .desc { font-size: 13px; color: #2d6fa3; margin-top: 2px; }
     .weather-card .rain { font-size: 12px; color: #4a8bc2; font-weight: 500; margin-top: 2px; }
 
+    /* ---- Birds to Spot ---- */
+    .birds-chip {
+      margin: 8px 20px 12px;
+      background: var(--accent-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .birds-chip-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-dark);
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .birds-chip-header .chevron {
+      margin-left: auto;
+      font-size: 10px;
+      transition: transform 0.2s ease;
+    }
+    .birds-chip.expanded .chevron { transform: rotate(180deg); }
+    .birds-chip-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    .birds-chip.expanded .birds-chip-body { max-height: 2000px; }
+    .bird-entry {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .bird-entry-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent-dark);
+      margin-bottom: 3px;
+    }
+    .bird-entry-blurb {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
+    .bird-entry-where {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Resources page birds section */
+    .birds-resource-counter {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    .bird-resource-row {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .bird-resource-row:last-child { border-bottom: none; }
+    .bird-resource-row input[type="checkbox"] {
+      margin-top: 2px;
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .bird-resource-row .bird-content { flex: 1; }
+    .bird-resource-row.spotted .bird-entry-name {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+    .bird-fun-fact {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      font-style: italic;
+    }
+
     /* Overview Weather */
     .overview-weather {
       font-size: 12px;
@@ -714,6 +803,19 @@
       .weather-card .temp { color: #7ec8ff; }
       .weather-card .desc { color: #5db3e8; }
       .weather-card .rain { color: #4a9fd1; }
+
+      /* Birds to Spot — dark mode */
+      .birds-chip {
+        background: #1f2a1e;
+        border-color: #2f4128;
+      }
+      .bird-entry {
+        border-top-color: #2f4128;
+      }
+      .birds-chip-header,
+      .bird-entry-name {
+        color: #b3d6a8;
+      }
     }
   </style>
 </head>
@@ -1169,6 +1271,140 @@ const resources = [
   }
 ];
 
+// ---- Birds to Spot — Mom & Dad ----
+// Matched to day.weather.location (case-insensitive). London copy stays in sync with ../index.html.
+const birds = [
+  // Bath
+  {
+    id: 'grey-wagtail',
+    name: 'Grey Wagtail',
+    emoji: '💛',
+    where: 'River Avon, Bath — especially the rocks at Pulteney Weir',
+    blurb: "Pronounced yellow belly, long bobbing tail, and a way of picking insects off wet stones right beside Pulteney Weir. Confusingly, the Yellow Wagtail is a different bird — the one you'll actually see here, year-round, is the so-called \"Grey\" one with the bright lemon underside.",
+    funFact: "The grey wagtail was named first — which is why the genuine yellow wagtail got stuck with the more on-the-nose title.",
+    regions: ['bath']
+  },
+  {
+    id: 'common-kingfisher-bath',
+    name: 'Common Kingfisher',
+    emoji: '💎',
+    where: 'River Avon, Bath — quiet stretches away from the weir',
+    blurb: "A streak of electric blue and orange, gone before your brain processes it. Watch the quieter stretches of the Avon around Bath for one perched low, bobbing its head to judge the shot before plunging.",
+    funFact: "The \"common\" in the name is doing a lot of work — sightings still feel like a small miracle.",
+    regions: ['bath']
+  },
+  // Cotswolds
+  {
+    id: 'red-kite',
+    name: 'Red Kite',
+    emoji: '🪁',
+    where: 'Cotswolds skies, especially over Blenheim and the A40',
+    blurb: "The huge forked-tail raptor wheeling over Cotswold meadows. Once nearly extinct in the UK, now everywhere in the south.",
+    funFact: "Reintroduced to the Chilterns from Spanish and Swedish stock between 1989 and 1994. Drive the back roads near Blenheim and you'll spot a dozen without trying.",
+    regions: ['cotswolds']
+  },
+  {
+    id: 'skylark',
+    name: 'Skylark',
+    emoji: '🎵',
+    where: 'Cotswolds farmland, hovering high above the fields',
+    blurb: "A small brown bird famous for its wildly elaborate song delivered while hovering 100m up. The soundtrack to an English spring.",
+    funFact: "They're so high you usually hear them long before you spot the dot — song flights can last several minutes without a pause.",
+    regions: ['cotswolds']
+  },
+  {
+    id: 'yellowhammer',
+    name: 'Yellowhammer',
+    emoji: '🌾',
+    where: 'Cotswolds farmland hedgerows — on top of a post, belting away',
+    blurb: "A splash of butter-yellow on a hedgerow post, belting out the classic British mnemonic \"a-little-bit-of-bread-and-no-cheeeeese.\" UK numbers have fallen 61% since the 1960s thanks to intensive farming, so Cotswolds field margins are one of their last strongholds — and late April is peak singing.",
+    funFact: "Enid Blyton is largely responsible for popularising the \"bread and cheese\" translation — it's been the yellowhammer's calling card ever since.",
+    regions: ['cotswolds']
+  },
+  {
+    id: 'little-owl',
+    name: 'Little Owl',
+    emoji: '🦉',
+    where: 'Cotswolds drystone walls and fence posts, often in broad daylight',
+    blurb: "Britain's smallest owl, barely bigger than a song thrush, and unusual for its habit of sunbathing in broad daylight on a fence post or a Cotswold stone wall. Not actually native — introduced by Victorian landowners in the 1870s–80s and now a quiet fixture of farmland.",
+    funFact: "Their genus name Athene honours the goddess Athena, whose sacred bird this was — it's the owl on the modern Greek one-euro coin.",
+    regions: ['cotswolds']
+  },
+  {
+    id: 'dipper',
+    name: 'Dipper',
+    emoji: '🌊',
+    where: 'Fast, stony Cotswold streams — the upper Windrush, brooks around Stroud',
+    blurb: "A round little chocolate-and-white bird that walks underwater along fast, stony stream beds. Genuinely underwater, feet on the gravel — not a metaphor.",
+    funFact: "It's the UK's only truly aquatic songbird. No other British passerine swims.",
+    regions: ['cotswolds']
+  },
+  // London — matches the David & Paula app (keep copy in sync across both files)
+  {
+    id: 'tower-raven',
+    name: 'Raven',
+    emoji: '🐦\u200d⬛',
+    where: 'Tower of London grounds',
+    blurb: "At least seven live at the Tower full-time, tended by the Yeoman Ravenmaster — London's most famous corvids.",
+    funFact: "Legend says if the ravens ever leave, the Tower crumbles and the kingdom falls — so one wing gets a discreet trim, just in case.",
+    regions: ['london']
+  },
+  {
+    id: 'great-white-pelican',
+    name: 'Great White Pelican',
+    emoji: '🪿',
+    where: "St James's Park — Duck Island, east end of the lake",
+    blurb: "Yes, pelicans, in the middle of London. A gift from the Russian ambassador to Charles II in 1664, and the colony's been there ever since.",
+    funFact: "They're fed fresh fish by the park keepers around 2:30pm daily — worth timing a stroll.",
+    regions: ['london']
+  },
+  {
+    id: 'common-kingfisher-london',
+    name: 'Common Kingfisher',
+    emoji: '💎',
+    where: "St James's Park lake edges, reedy corners",
+    blurb: "Watch for a streak of electric blue — a kingfisher perched and head-bobbing to judge depth before plunging for a stickleback. Resident in St James's Park but elusive; spotting one is a reward, not a promise.",
+    funFact: "The \"common\" in the name is doing a lot of work — sightings still feel like a small miracle.",
+    regions: ['london']
+  },
+  {
+    id: 'peregrine-falcon',
+    name: 'Peregrine Falcon',
+    emoji: '🦅',
+    where: 'Canary Wharf towers — favourite hunting perch',
+    blurb: "Look up at Canary Wharf — peregrines hunt these canyons at over 200 mph in a stoop. They don't nest here (they prefer Tate Modern, Battersea, and Parliament) but the towers are a favourite hunting perch.",
+    funFact: "London's peregrines are a comeback story — around 30 breeding pairs now, rivalling the entire Lake District.",
+    regions: ['london']
+  },
+  {
+    id: 'rose-ringed-parakeet',
+    name: 'Rose-ringed Parakeet',
+    emoji: '🦜',
+    where: 'Kensington Gardens canopy',
+    blurb: "London's rowdy green invaders — listen for the screech before you see them flashing through the canopy. Kensington Gardens is parakeet HQ, year-round.",
+    funFact: "Legend blames escapees from the 1951 set of The African Queen, or a pair released by Jimi Hendrix on Carnaby Street. Both stories are almost certainly nonsense — wild parakeets have been spotted in Britain since the 1860s.",
+    regions: ['london']
+  },
+  {
+    id: 'mute-swan',
+    name: 'Mute Swan',
+    emoji: '🦢',
+    where: 'The Round Pond, Kensington Gardens',
+    blurb: "Big, white, deeply unimpressed by tourists. Every unmarked mute swan on open water in England and Wales technically belongs to the King (shared on the Thames with the Vintners' and Dyers' livery companies).",
+    funFact: "The annual \"Swan Upping\" ceremony still rounds them up every July for a royal headcount, in skiffs.",
+    regions: ['london']
+  },
+  {
+    id: 'grey-heron',
+    name: 'Grey Heron',
+    emoji: '🪶',
+    where: 'Thames embankments and the South Bank',
+    blurb: "Tall, grey, and statue-still in the shallows. London has a healthy resident population that doesn't mind the city at all.",
+    funFact: "Grey herons commute — pairs nest in Regent's Park and Battersea Park (two of Europe's most urban heronries), then fly out to the Thames, the Serpentine, and the canals to fish.",
+    regions: ['london']
+  }
+];
+
 // ==================== RENDERING ====================
 let selectedIdx = 0;
 let packingEditMode = false;
@@ -1209,6 +1445,12 @@ function renderDateScroller() {
   // Scroll selected into view
   const sel = el.querySelector('.selected');
   if (sel) sel.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+// Birds chip — toggle expand/collapse
+function toggleBirdsChip(region) {
+  const chip = document.querySelector(`.birds-chip[data-region="${region}"]`);
+  if (chip) chip.classList.toggle('expanded');
 }
 
 function confettiHTML() {
@@ -1257,6 +1499,28 @@ function renderDay() {
       <div class="rain">${w.rain}</div>
     </div>
   </div>`;
+
+  // Birds chip (region-matched by day's weather.location)
+  const region = (w.location || '').toLowerCase();
+  const dayBirds = birds.filter(b => b.regions.includes(region));
+  if (dayBirds.length > 0) {
+    html += `<div class="birds-chip" data-region="${region}">
+      <div class="birds-chip-header" onclick="toggleBirdsChip('${region}')">
+        <span>🐦</span>
+        <span>Birds nearby (${dayBirds.length})</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="birds-chip-body">
+        ${dayBirds.map(b => `
+          <div class="bird-entry">
+            <div class="bird-entry-name">${b.emoji} ${b.name}</div>
+            <div class="bird-entry-blurb">${b.blurb}</div>
+            <div class="bird-entry-where">${b.where}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
 
   // Birthday banner
   if (d.isBirthday) {
@@ -1363,6 +1627,75 @@ function renderResources() {
       }).join('')}
     </div>`;
   }).join('');
+}
+
+// ---- Birds to Spot — Resources injection ----
+function getBirdsSpotted() {
+  try { return JSON.parse(localStorage.getItem('birds-mom-spotted') || '[]'); }
+  catch { return []; }
+}
+
+function saveBirdsSpotted(spotted) {
+  try { localStorage.setItem('birds-mom-spotted', JSON.stringify(spotted)); }
+  catch {}
+}
+
+function updateBirdCounter() {
+  const counterEl = document.querySelector('.birds-resource-counter');
+  if (!counterEl) return;
+  const spotted = getBirdsSpotted();
+  counterEl.textContent = `${spotted.length} of ${birds.length} spotted`;
+}
+
+function renderBirdsResources() {
+  const container = document.getElementById('resourcesList');
+  if (!container) return;
+  if (container.querySelector('.bird-resource-row')) return;
+
+  const group = document.createElement('div');
+  group.className = 'resource-group';
+  group.innerHTML = `
+    <div class="resource-group-header" style="display:flex;align-items:center;gap:8px">
+      <span>🐦 Birds to Spot</span>
+      <span class="birds-resource-counter" style="margin-left:auto">0 of ${birds.length} spotted</span>
+    </div>
+    ${birds.map(b => `
+      <div class="bird-resource-row" data-bird-id="${b.id}">
+        <input type="checkbox" id="bird-chk-${b.id}">
+        <div class="bird-content">
+          <div class="bird-entry-name">${b.emoji} ${b.name}</div>
+          <div class="bird-entry-blurb">${b.blurb}</div>
+          <div class="bird-entry-where">${b.where}</div>
+          <div class="bird-fun-fact">${b.funFact}</div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+  container.appendChild(group);
+
+  const spotted = getBirdsSpotted();
+  group.querySelectorAll('.bird-resource-row').forEach(row => {
+    const id = row.dataset.birdId;
+    const cb = row.querySelector('input[type="checkbox"]');
+    if (spotted.includes(id)) {
+      cb.checked = true;
+      row.classList.add('spotted');
+    }
+    cb.addEventListener('change', () => {
+      const current = getBirdsSpotted();
+      if (cb.checked) {
+        if (!current.includes(id)) current.push(id);
+        row.classList.add('spotted');
+      } else {
+        const i = current.indexOf(id);
+        if (i >= 0) current.splice(i, 1);
+        row.classList.remove('spotted');
+      }
+      saveBirdsSpotted(current);
+      updateBirdCounter();
+    });
+  });
+  updateBirdCounter();
 }
 
 // Load or initialize packing list from localStorage
@@ -1673,7 +2006,7 @@ function switchView(view) {
 
   if (view === 'day') renderDay();
   else if (view === 'overview') renderOverview();
-  else if (view === 'resources') renderResources();
+  else if (view === 'resources') { renderResources(); renderBirdsResources(); }
   else if (view === 'packing') renderPacking();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
